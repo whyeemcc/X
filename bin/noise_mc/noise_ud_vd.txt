@@ -1,0 +1,21 @@
+.param scale_normalize
+.param normalize_size
+.param Vd_drain
+.param Vg_drain
+.param Vs_drain
+.param Vb_drain
+.param freq
+
+.op
+.ac POI 1 freq
+.noise v(D) Vgs 1
+
+xM D G S B model_name dev_param
+Vgs G 0 Vg_drain ac=0.05
+Vds DD 0 Vd_drain
+Vs S 0 Vs_drain
+Vb B 0 Vb_drain
+rload DD D 1 noise=0
+
+.meas ac int_noise_sq integ par('onoise(m)*onoise(m)')
+.meas ac noise_ud_vd param='int_noise_sq'                  $unit(sq v/hz)

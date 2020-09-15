@@ -1,0 +1,23 @@
+.param devtp
+.param vdd_drain
+.param vdd_gate
+.param vd_lin
+.param vg_start
+.param sweep_step
+.param scale_normalize
+.param normalize_size
+.param idc
+.param dl
+
+.param vdd1_drain='vdd_drain*devtp'
+.param vdd1_gate='vdd_gate*devtp'
+.param vd_lin1='vd_lin*devtp'
+
+VGS G 0 0
+
+.dc VGS vg_start vdd1_gate 'sweep_step*devtp'
+
+xM~ D~ G 0 0 model_name dev_param
+VDS~ D~ 0 vd_lin1
+
+.meas dc vt_lin_ld~ find v(G,0) when i(VDS~)=par('-1*idc*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)')          $unit(V)

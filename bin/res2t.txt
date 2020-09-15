@@ -1,0 +1,13 @@
+.param Vres
+.param scale_normalize
+.param normalize_size
+
+.param vgsweep=0
+
+.dc vgsweep 0 Vres Vres
+
+xr~ in~ 0 model_name dev_param
+Vin~ in~ 0 vgsweep
+
+.meas dc i_in~ find i(Vin~) when v(in~,0)=Vres
+.meas dc res2t~ param='-Vres/i_in~/((LR)/(WR))'                $unit(ohm/sq)

@@ -1,0 +1,31 @@
+{
+"Delta":        "&1-&2",
+"Ratio":        "(&1-&2)/((&1+&2)/2)"
+
+"vt_gm":        "Delta",
+"vt_lin":       "Delta",
+"vt_sat":       "Delta",
+"pnp_mis_vbe":  "Delta",
+"npn_mis_vbe":  "Delta",
+"vt_lin_ld":    "Delta",
+"vt_sat_ld":    "Delta",
+
+"idsat":        "Ratio",
+"idlin":        "Ratio",
+"res2t":        "Ratio",
+"res3t":        "Ratio",
+"mom2t":        "Ratio",
+"mom3t":        "Ratio",
+"mom4t":        "Ratio",
+"mom5t":        "Ratio",
+"var":          "Ratio",
+"pnp_mis_ic":   "Ratio",
+"pnp_mis_ib":   "Ratio",
+"pnp_mis_beta": "Ratio",
+"npn_mis_ic":   "Ratio",
+"npn_mis_ib":   "Ratio",
+"npn_mis_beta": "Ratio",
+"mim1k":        "Ratio",
+"mim10k":       "Ratio",
+"mim100k":      "Ratio"
+}

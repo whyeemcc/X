@@ -1,0 +1,13 @@
+.param scale_normalize
+.param normalize_size
+
+.AC POI 1 100000
+
+xM~ D~ G~ S~ B~ model_name dev_param
+VG~ G~ 0 0
+VS~ S~ 0 0
+VB~ B~ 0 dc=0 ac=0.1
+VD~ D~ 0 0
+
+.meas ac IC~ find II(VS~) AT=100000
+.meas ac cjs_0v~ param='IC~/0.1/(2*3.14159265358*100000)*1e15'            $unit(fF)

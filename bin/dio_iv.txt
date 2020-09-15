@@ -1,0 +1,14 @@
+.param Vdio
+.param scale_normalize
+.param normalize_size
+
+.param vgsweep=0
+
+.dc vgsweep 0 Vdio Vdio
+
+xd~ in~ Db~ model_name dev_param
+Vin~ in~ 0 vgsweep
+VDb~ Db~ 0 0
+
+.meas dc i_in~ find i(Vin~) when v(in~,0)=Vdio
+.meas dc dio_iv~ param='-i_in~'                                $unit(A)

@@ -1,0 +1,23 @@
+.param devtp
+.param vdd
+.param vd_lin
+.param vg_start
+.param sweep_step
+.param scale_normalize
+.param normalize_size
+.param idc
+.param dl
+
+.param vdd1='vdd*devtp'
+.param vd_lin1='vd_lin*devtp'
+
+VGS G 0 0
+
+.dc VGS vg_start vdd1 'sweep_step*devtp'
+
+xM~ D~ G 0 0 model_name dev_param
+VDS~ D~ 0 vd_lin1
+
+.meas dc vt_sw_a~ find v(G,0) when i(VDS~)=par('-1*1e-8*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)')
+.meas dc vt_sw_b~ find v(G,0) when i(VDS~)=par('-1*1e-10*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)')
+.meas dc swing_lin_a~ param='(vt_sw_a~-vt_sw_b~)*devtp*1000/2'                  $unit(mV/dec)

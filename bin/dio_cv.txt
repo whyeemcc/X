@@ -1,0 +1,13 @@
+.param Vdio
+.param scale_normalize
+.param normalize_size
+
+.AC POI 1 100000
+
+xd~ D~ 0 model_name dev_param
+
+VDG1~ D~ DT~ dc=0 ac=0.1
+VDG2~ DT~ 0 dc='Vdio'
+
+.meas ac i_in~ find II(VDG1~) AT=100000
+.meas ac dio_cv~ param='-i_in~/0.1/(2*3.14159265358*100000)'               $unit(F)

@@ -1,0 +1,15 @@
+.param Vmom
+.param scale_normalize
+.param normalize_size
+
+.AC POI 1 100000
+
+xM~ D~ Db~ Dc~ Dd~ 0 model_name dev_param
+VDb~ Db~ 0 0
+VDc~ Dc~ 0 0
+VDd~ Dd~ 0 0
+VDG1~ D~ DT~ dc=0 ac=0.1
+VDG2~ DT~ 0 dc='Vmom'
+
+.meas ac i_in~ find II(VDG1~) AT=100000
+.meas ac mom5t~ param='-i_in~/0.1/(2*3.14159265358*100000)*1e15'                   $unit(fF)

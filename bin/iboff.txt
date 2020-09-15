@@ -1,0 +1,18 @@
+.param devtp
+.param vdd
+.param scale_normalize
+.param normalize_size
+.param forvd
+
+.param vdd1='vdd*devtp'
+.param vgsweep=0
+
+.dc vgsweep 0 vdd1 vdd1
+
+xM~ D~ G~ S~ B~ model_name dev_param
+VDS~ D~ 0 'forvd*vdd1'
+VGS~ G~ 0 vgsweep
+VS~ S~ 0 0
+VBS~ B~ 0 0
+
+.meas dc iboff~ find 'devtp*i(VBS~)/<NFIN>/scale_normalize*1e12' when v(G~,0)=0              $unit(pA/fin)

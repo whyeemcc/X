@@ -1,0 +1,27 @@
+.param devtp
+.param vdd
+.param vdd_drain
+.param vdd_gate
+.param vg_start
+.param sweep_step
+.param scale_normalize
+.param normalize_size
+.param idc
+.param dl
+
+.param vdd1='vdd_drain*devtp'
+
+VGS G 0 0
+
+.dc VGS vg_start vdd1 'sweep_step*devtp'
+
+xM1~ D1~ G 0 0 model_name dev_param
+VDS1~ D1~ 0 vdd1
+
+xM2~ D2~ G 0 0 model_name dev_param
+VDS2~ D2~ 0 vdd1
+
+.meas dc vt_sat~ find v(G,0) when i(VDS1~)=par('-1*idc*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)')
+.meas dc i_d_2~ find i(VDS2~) when v(G,0)='vt_sat~-devtp*0.06'
+.meas dc i_d_3~ find i(VDS2~) when v(G,0)='vt_sat~-devtp*0.05'
+.meas dc swing_sat_ld~ param='10/log10(i_d_3~/i_d_2~)'               $unit(mV/dec)

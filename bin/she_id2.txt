@@ -1,0 +1,15 @@
+.param devtp
+.param vdd
+.param vd_lin
+
+.param vdd1='vdd*devtp'
+.param vd_lin1='vd_lin*devtp'
+.param vgsweep=0
+
+.dc vgsweep 0 vdd1 vdd1 sweep data=sweep_instance
+
+xM~ D~ G~ 0 0 model_name dev_param
+VDS~ D~ 0 vdd1
+VGS~ G~ 0 '0.5*vgsweep'
+
+.meas dc she_id2 find LX594('xM~.m1') when v(G~,0)='0.5*vdd1'           $unit(deltaK)
