@@ -1,13 +1,15 @@
-import os,sys,time
+import os
+import sys
+import time
 from Reader import Config
 from Netlist import Net
-from Minging import Minging
+from Mining import Mining
 from Setting import *
 
 path_Xmodel = os.path.join(sys.path[0],'../')
 if path_cfg == '': path_cfg = path_Xmodel
 
-os.chdir(path); cfg = Config(cfg_File)
+os.chdir(path_cfg); cfg = Config(cfg_File)
 
 def generate_netlist():
     net = Net(cfg)
@@ -17,8 +19,8 @@ def generate_netlist():
         os.chdir(path_Xmodel + '/bin')
 
 def run_netlist():
-    printColor('Xmodel processing...',SKYBLUE)
-    printColor('------------ load cfg: ' + cfg_File + ' ------------',Yellow)
+    printColor('Xmodel Processing...',SKYBLUE)
+    printColor('--- load cfg: ' + cfg_File + ' ---',YELLOW)
     printColor('<' + cfg.Folder + '>',PINK)
     
     os.chdir(path_cfg + '/output/' + cfg.Folder)
@@ -32,12 +34,12 @@ def run_netlist():
 
 def extract_data():
     os.chdir(path_cfg + '/output/' + cfg.Folder)
-    minging = Minging(cfg)
+    mining = Mining(cfg)
     try:
-        minging.save()
+        mining.save()
     except:
-        print('Failed in extraction!')
-    minging.del_temp()
+        print('Failed in Extraction!')
+    mining.del_temp()
     
 if __name__ == '__main__':
     generate_netlist()
