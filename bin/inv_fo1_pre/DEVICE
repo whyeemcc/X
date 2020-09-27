@@ -1,0 +1,31 @@
+.subckt inverter11 111 211 311 411 
+xmp11 311 211 111 111 model_pname dev_pzparam
+xmn11 311 211 411 411 model_nname dev_nzparam
+.ends inverter11
+
+.subckt ring11 111 211 1311
+x111 111  211  311 0 inverter11
+x211 111  311  511 0 inverter11
+x311 111  511  611 0 inverter11
+x411 111  611  711 0 inverter11
+x511 111  711  811 0 inverter11
+x611 111  811  911 0 inverter11
+x711 111  911  1011 0 inverter11
+x811 111  1011 1111 0 inverter11
+x911 111  1111 1211 0 inverter11
+x1011 111 1211 1311 0 inverter11
+.ends ring11
+
+xr111 111 211 311 ring11
+xr211 111 311 411 ring11
+xr311 111 411 511 ring11
+x1111 111 511 211 0 inverter11
+
+vdd11 111 0 vdd 
+.ic v(211)=0
+
+.measure tran ring_delaya11 trig v(211) val='vdd/2' rise=2 targ v(211) val='vdd/2' rise=3
+.measure tran ring_delayb11 trig v(211) val='vdd/2' rise=3 targ v(211) val='vdd/2' rise=4
+
+.measure tran inv_fo1_pre11 PARAM='ring_delaya11*1e12/62' 
+.measure tran invfo1preb11 PARAM='ring_delayb11*1e12/62' 

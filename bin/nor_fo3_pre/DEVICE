@@ -1,0 +1,42 @@
+.subckt nor A B
+xm1 6 A VDDa VDDa model_pname dev_pzparam
+xm2 5 A 6 VDDa model_pname dev_pzparam
+xm3 5 A VSS VSS model_nname dev_nzparam
+xm4 5 A VSS VSS model_nname dev_nzparam
+
+xm5 8 A VDDa VDDa model_pname dev_pzparam
+xm6 7 A 8 VDDa model_pname dev_pzparam
+xm7 7 A VSS VSS model_nname dev_nzparam
+xm8 7 A VSS VSS model_nname dev_nzparam
+
+xm9 9 A VDDa VDDa model_pname dev_pzparam
+xm10 B A 9 VDDa model_pname dev_pzparam
+xm11 B A VSS VSS model_nname dev_nzparam
+xm12 B A VSS VSS model_nname dev_nzparam
+.ends nor
+
+.subckt ring C D 
+x1 C  1 nor
+x2 1  2 nor
+x3 2  3 nor
+x4 3  4 nor
+x5 4  5 nor
+x6 5  6 nor
+x7 6  7 nor
+x8 7  8 nor
+x9 8  9 nor
+x10 9  D nor
+.ends ring
+
+xr1  1  2  ring
+xr2  2  3  ring
+x21  3  1  nor
+
+VDDa  VDDa  0  VDD
+VSS  VSS  0  0
+.ic v(3)=0 
+
+.measure tran ring_delaya trig v(3) val='VDD/2' rise=2 targ v(3) val='VDD/2' rise=3
+.measure tran ring_delayb trig v(3) val='VDD/2' rise=3 targ v(3) val='VDD/2' rise=4
+.measure tran nor_fo3_pre PARAM='ring_delaya*1e12/42' 
+.measure tran norfo3pre PARAM='ring_delayb*1e12/42' 

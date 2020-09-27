@@ -59,7 +59,7 @@ class Net():
         for p in params:
             if p == 'devtp': v = self.cfg.devtp
             elif p == 'vdd': v = self.cfg.Vdd[0]
-            elif           : v = self.cfg.str(p)
+            else           : v = self.cfg.str(p)
             Text = re.sub('\.param ' + p + '\s*?\n', '.param {}={}\n'.format(p,v), Text)
             
         # record Instance_Discard
@@ -69,12 +69,12 @@ class Net():
                 self.Instance_Discard += [i]
                 
         # sweep type
-        if self.cfg.Type in ['typ','sens'] adn self.cfg.dutype == 1:
+        if self.cfg.Type in ['typ','sens'] and self.cfg.dutype == 1:
             swp_type = 'sweep data=sweep_instance'
-        elif self.cfg.Type in ['typ','sens'] adn self.cfg.dutype == 2:
+        elif self.cfg.Type in ['typ','sens'] and self.cfg.dutype == 2:
             swp_type = ''
         elif self.cfg.Type in ['noise_mc','mis','monte','mos_mc']:
-            swp_type = 'sweep monte=%s' % slf.cfg.MC_num
+            swp_type = 'sweep monte=%s' % self.cfg.MC_num
         try:
             Text = re.sub(r'(\.(dc\s|ac\s).*)\s*\n',r'\1 '+swp_type+'\n\n', Text, flags=re.I)
         except:
@@ -96,7 +96,7 @@ class Net():
         else:
             Net_Lines = Text.split('\n')
             Text = '\n'.join([line for line in Net_Lines if '~' not in line and '\t' != line])
-            Dut_block = '\n'.join([line for line in Net_Lines if '~' in line and '\t' == line])
+            Dut_block = '\n'.join([line for line in Net_Lines if '~' in line or '\t' == line])
             Text = self.Device_iteration(Text,Dut_block)
             
         return Text + '\n'
@@ -142,14 +142,14 @@ class Net():
         for i,cor in enumerate(self.cfg.Corner):
             if i != 0:
                 Text += '.alter\n'
-                Text += self.lib_attach_add('.del lib', self.cfg.Corner[:-1])
+                Text += self.lib_attach_add('.del lib', self.cfg.Corner[i-1])
                 Text += self.lib_attach_add('.lib', self.cfg.Corner[i])
             
             for j,temp in enumerate(self.cfg.Temp):
                 vdd_list = self.cfg.Vdd if i+j != 0 else self.cfg.Vdd[1:]
                 for k,vdd in enumerate(vdd_list):
                     if i == 0 or j+k != 0: Text += '.alter\n'
-                    Text += '.Temp ' + temp + '\n'
+                    Text += '.TEMP ' + temp + '\n'
                     Text += '.param vdd=' + vdd + '\n'
         return Text
         

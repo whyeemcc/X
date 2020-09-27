@@ -1,0 +1,6 @@
+.param vdd
+.param scale_normalize
+.param normalize_size
+change_instance
+
+.tran 0.002ns 40ns

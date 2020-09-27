@@ -98,7 +98,7 @@ class Minging():
                 for Etest in self.cfg.Etest:
                     try:                list += [dic[Etest][start+n]]
                     except IndexError:  list += [' ']
-                self.wr(csv,','join(list))
+                self.wr(csv,','.join(list))
         
         elif self.cfg.Type in ['typ','sens'] and self.cfg.dutype == 2:
             start = portion
@@ -107,7 +107,7 @@ class Minging():
                 for Etest in self.cfg.Etest:
                     try:                list += [dic[Etest+str(n+1)][start]]
                     except IndexError:  list += [' ']
-                self.wr(csv,','join(list))
+                self.wr(csv,','.join(list))
                     
         elif self.cfg.Type == 'mis':
             start = portion*self.cfg.MC_num
@@ -120,20 +120,20 @@ class Minging():
                         list += self.median_std_mis(Etest,listA,listB)
                     except IndexError:
                         list += ['','']
-                self.wr(csv,','join(list))
+                self.wr(csv,','.join(list))
 
         elif self.cfg.Type == 'monte':   
             start = portion*self.cfg.MC_num
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:] if self.cfg.dutype == 1 else [size]
                 for Etest in self.cfg.Etest:
-                    list += self.median_std(dic[Etest + str(n+1)][start : start + self.cfg.MC_num]
-                slef.wr(csv,','.join(list))
+                    list += self.median_std(dic[Etest + str(n+1)][start : start + self.cfg.MC_num])
+                self.wr(csv,','.join(list))
 
                 for m in range(self.cfg.MC_num):
                     list2 = ['' for x in size]; list2[-1] = str(m+1)
                     for Etest in self.cfg.Etest:
-                        try:                list2 += [dic[Etest + str(n+1)][start + m].'']
+                        try:                list2 += [dic[Etest + str(n+1)][start + m],'']
                         except IndexError:  list2 += ['','']
                     list2.pop()
                     self.wr(csv,','.join(list2))
@@ -143,13 +143,13 @@ class Minging():
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:] if self.cfg.dutype == 1 else [size]
                 for Etest in self.cfg.Etest:
-                    list += self.median_std(dic[Etest + str(n+1) + '_' + np][start : start + self.cfg.MC_num]
-                slef.wr(csv,','.join(list))
+                    list += self.median_std(dic[Etest + str(n+1) + '_' + np][start : start + self.cfg.MC_num])
+                self.wr(csv,','.join(list))
                 
                 for m in range(self.cfg.MC_num):
                     list2 = ['' for x in size]; list2[-1] = str(m+1)
                     for Etest in self.cfg.Etest:
-                        try:                list2 += [dic[Etest + str(n+1) + '_' + np][start + m].'']
+                        try:                list2 += [dic[Etest + str(n+1) + '_' + np][start + m],'']
                         except IndexError:  list2 += ['','']                
                     list2.pop()
                     self.wr(csv,','.join(list2))
@@ -160,13 +160,13 @@ class Minging():
                 lump = n*self.cfg.MC_num
                 list = size[:]
                 for Etest in self.cfg.Etest:
-                    list += self.median_std(dic[Etest][start + lump : start + lump + self.cfg.MC_num]
-                slef.wr(csv,','.join(list))
+                    list += self.median_std(dic[Etest][start + lump : start + lump + self.cfg.MC_num])
+                self.wr(csv,','.join(list))
                 
                 for m in range(self.cfg.MC_num):
                     list2 = ['' for x in size]; list2[-1] = str(m+1)
                     for Etest in self.cfg.Etest:
-                        try:                list2 += [dic[Etest][start + lump + m].'']
+                        try:                list2 += [dic[Etest][start + lump + m],'']
                         except IndexError:  list2 += ['','']                
                     list2.pop()
                     self.wr(csv,','.join(list2))

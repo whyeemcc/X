@@ -3,12 +3,10 @@ import os
 import sys
 import platform
 
-sys = platform.system()
+system = platform.system()
 
-if len(sys.argv) == 1:
-    abbr, cfg_File = 'hsp', 'xxxx.cfg'
-elif len(sys.argv) > 1:
-    abbr, cfg_File = sys.argv[1], sys.argv[2]
+if len(sys.argv) == 1:  abbr, cfg_File = 'hsp', 'xxxx.cfg'
+elif len(sys.argv) > 1: abbr, cfg_File = sys.argv[1], sys.argv[2]
     
 path_cfg, cfg_File = os.path.split(cfg_File)
 
@@ -19,38 +17,36 @@ elif abbr == 'afs': engine = 'fastspice'; meas = '.log';     curve = '.log';    
 if system == 'Windows' and engine == 'hspice': os.system('start/MIN hspice -C')
 
 def engine_run(etest):    
-    if system == 'Windows' and abbr == 'hsp': os.system('start/WAIT/MIN hspice -C -i {}.sp -o {}'.format(etest,etest))        
-    elif system == 'Linux' and abbr == 'hsp': os.system('gnome-terminal --disable-factory -x bash -c "hspice -i {}.sp -o {}"'.format(etest,etest))
-    elif system == 'Linux' and abbr == 'spe': os.system('gnome-terminal --disable-factory -x bash -c "spectre +spice {}.sp"'.format(etest))
-    elif system == 'Linux' and abbr == 'afs': os.system('gnome-terminal --disable-factory -x bash -c "afs {}.sp"'.format(etest))
+    if   system == 'Windows' and abbr == 'hsp': os.system('start/WAIT/MIN hspice -C -i {}.sp -o {}'.format(etest,etest))        
+    elif system == 'Linux'   and abbr == 'hsp': os.system('gnome-terminal --disable-factory -x bash -c "hspice -i {}.sp -o {}"'.format(etest,etest))
+    elif system == 'Linux'   and abbr == 'spe': os.system('gnome-terminal --disable-factory -x bash -c "spectre +spice {}.sp"'.format(etest))
+    elif system == 'Linux'   and abbr == 'afs': os.system('gnome-terminal --disable-factory -x bash -c "afs {}.sp"'.format(etest))
     else: input(' **Error** {} + {} not support yet!'.format(system,abbr)); exit()
     
 def hunter_meas(param,Text):
-    if engine == 'hspice': return re.findall(r'\W' + param + r'\s*=\s*(.*?)\s', Text, re.I)
-    elif engine == 'spectre': return re.findall(r'\W' + param + r'.*?=\s*(.*?)\s', Text, re.DOTALL|re.I)
+    if   engine == 'hspice':    return re.findall(r'\W' + param + r'\s*=\s*(.*?)\s', Text, re.I)
+    elif engine == 'spectre':   return re.findall(r'\W' + param + r'.*?=\s*(.*?)\s', Text, re.DOTALL|re.I)
     elif engine == 'fastspice': return re.findall(r'\W' + param + r'\s*=\s*(.*?)\s', Text, re.I)
     
 def fault_check(log_File):
     content = open(log_File).read()
-    if engine == 'hspice': m = re.search('\*\*(error|warning)\*\*.*\n', content, re.I)
-    elif engine == 'spectre': m = re.search('ERROR:.*\n', content, re.I)
+    if   engine == 'hspice':    m = re.search('\*\*(error|warning)\*\*.*\n', content, re.I)
+    elif engine == 'spectre':   m = re.search('ERROR:.*\n', content, re.I)
     elif engine == 'fastspice': m = None
-    if m is not none: printColor('\n'+m.group(), RED)
+    if m is not None: printColor('\n'+m.group(), RED)
     
 def open_csv(csv_file):
-    if system == 'Windows': os.system('"{}"'.format(csv_file))
-    elif system == 'Linux': os.system('gedit "{}"'.format(csv_file))
+    if   system == 'Windows': os.system('"{}"'.format(csv_file))
+    elif system == 'Linux':   os.system('gedit "{}"'.format(csv_file))
     
 def hunter_curve(Text):
     list = []
     for block in re.findall(r'\nx\n.*?\ny\n', Text, re.DOTALL):
         n = re.findall(r'((-|\+)?\d+(\.\d+)?((e|E)(-|\+)?\d+)?)\s\n', block)
-        list.append(x[0] for x in n)
+        list.append([x[0] for x in n])
     return list
     
-    
-RED=0x0c; BLUE=0x09; GREEN=0x0a; SKYBLUE=0x0b; PINK=0x0d; YELLOW=0x0e; WHITE=0x0f; DARKWHITE=0x07
-
+RED = 0x0c; BLUE = 0x09; GREEN = 0x0a; SKYBLUE = 0x0b; PINK = 0x0d; YELLOW = 0x0e; WHITE = 0x0f; DARKWHITE = 0x07
 if system == 'Windows':
     import ctypes
     # get handle
@@ -65,7 +61,6 @@ if system == 'Windows':
         set_cmd_text_color(code)
         sys.stdout.write(mess+'\n')
         set_cmd_text_color(DARKWHITE)
-        
 elif system == 'Linux':
     printColor = lambda x,code: print(x)
     

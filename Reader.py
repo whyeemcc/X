@@ -1,4 +1,4 @@
-import os,sys
+import os,re
 
 class Config:
     
@@ -33,26 +33,26 @@ class Config:
             
         self.model_path = os.path.join(self.Lib_path, self.Model_name)
         # if model file is .lib, then neglect the corner list
-        self.Lib_flag = True if os.path.splitext(self.Model_name)[1] == '.lib' else False
-        if self.Lib_flag == False: self.Corner = ['']
+        self.lib_flag = True if os.path.splitext(self.Model_name)[1] == '.lib' else False
+        if self.lib_flag == False: self.Corner = ['']
         
         # set instance from the first line, remain is dut sizes
         self.Dut_Dic = {}
-        self.Instance, self.Sizes = self.Dut[0], self.Duit[1:]
+        self.Instance, self.Sizes = self.Dut[0], self.Dut[1:]
         for i, size in enumerate(self.Sizes):
             if self.dutype == 1:
                 self.Dut_Dic[i+1] = {x.lower():y for x,y in zip(self.Instance, size)}
             elif self.dutype == 2:
-                slef.Dut_Dic[i+1] = {x.lower():y for (x,y) in re.findall('(\S+)\s*=\s*(\S+)',size)}
+                self.Dut_Dic[i+1] = {x.lower():y for (x,y) in re.findall('(\S+)\s*=\s*(\S+)',size)}
     
     def drop(self, key, line):
         try: return re.search(key + '\s*\|\s*(.+?)\s*\n', line, re.I).group(1)
-        except: input(' **Error**config reading failed: ' + key); exit()
+        except: input(' **Error** Config reading failed: ' + key); exit()
         
     def split(self, key, line):
         m = re.search(key + '\s*\|(.*)\n', line, re.I)
         try: return re.findall('\S+', m.group(1))
-        except: input(' **Error**config reading failed: ' + key); exit()
+        except: input(' **Error** Config reading failed: ' + key); exit()
         
     def matrix(self,text):
         self.dutype = 1

@@ -1,0 +1,32 @@
+.subckt nand A B
+xm1 B A VDDa VDDa 0 model_pname dev_pzparam
+xm2 B A VDDa VDDa 0 model_pname dev_pzparam
+xm3 B A 5 VSS 0 0 model_nname dev_nzparam
+xm4 5 A VSS VSS 0 0 model_nname dev_nzparam
+.ends nand
+
+.subckt ring C D 
+x1 C  1 nand
+x2 1  2 nand
+x3 2  3 nand
+x4 3  4 nand
+x5 4  5 nand
+x6 5  6 nand
+x7 6  7 nand
+x8 7  8 nand
+x9 8  9 nand
+x10 9  D nand
+.ends ring
+
+xr1  1  2  ring
+xr2  2  3  ring
+x21  3  1  nand
+
+VDDa  VDDa  0  VDD
+VSS  VSS  0  0
+.ic v(3)=0 
+
+.measure tran ring_delaya trig v(3) val='VDD/2' rise=2 targ v(3) val='VDD/2' rise=3
+.measure tran ring_delayb trig v(3) val='VDD/2' rise=3 targ v(3) val='VDD/2' rise=4
+.measure tran nand_fo1_pre_5t PARAM='ring_delaya*1e12/42' 
+.measure tran nandfo1pre PARAM='ring_delayb*1e12/42' 
