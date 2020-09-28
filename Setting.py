@@ -1,7 +1,4 @@
-import re
-import os
-import sys
-import platform
+import re,os,sys,platform
 
 system = platform.system()
 
@@ -10,9 +7,9 @@ elif len(sys.argv) > 1: abbr, cfg_File = sys.argv[1], sys.argv[2]
     
 path_cfg, cfg_File = os.path.split(cfg_File)
 
-if   abbr == 'hsp': engine = 'hspice';    meas = '.lis';     curve = '.lis';    log = '.lis'
-elif abbr == 'spe': engine = 'spectre';   meas = '.measure'; curve = '.print';  log = '.out'
-elif abbr == 'afs': engine = 'fastspice'; meas = '.log';     curve = '.log';    log = '.log'
+if   abbr == 'hsp': engine = 'hspice';    meas = '.lis';     curve = '.lis';   log = '.lis'
+elif abbr == 'spe': engine = 'spectre';   meas = '.measure'; curve = '.print'; log = '.out'
+elif abbr == 'afs': engine = 'fastspice'; meas = '.log';     curve = '.log';   log = '.log'
 
 if system == 'Windows' and engine == 'hspice': os.system('start/MIN hspice -C')
 

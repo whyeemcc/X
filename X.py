@@ -28,7 +28,7 @@ def run_netlist():
     for Etest in cfg.Etest:
         engine_run(Etest)
         fault_check(Etest + log)
-        print(Etest + '...done')
+        print(Etest + ' ...done')
     time2 = time.time()
     printColor('----------- time: {:.2f}s'.format(time2-time1),GREEN)
 
