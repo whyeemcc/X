@@ -2,7 +2,7 @@ import os,sys
 import time
 from Setting import *
 
-class Mining():
+class Mining:
 
     def __init__(self,cfg):
         self.cfg = cfg
@@ -19,13 +19,13 @@ class Mining():
     def Etest_Unit(self):
         temp = []
         for Etest in self.cfg.Etest:
-            if self.cfg.Type in ['typ','sens']: temp += [self.unit(Etest)]
-            else:                               temp += [self.unit(Etest)+'_median', self.unit(Etest)+'_sigma']
+            if self.cfg.Type in ['typ','dcmatch']: temp += [self.unit(Etest)]
+            else:                                  temp += [self.unit(Etest) + '_median', self.unit(Etest) + '_sigma']
         return temp
 
     def median(self,list):
         list.sort()
-        if len(list) % 2 == 0: return (list[int(len(list)/2-1)] + list[int(len(list)/2)])/2
+        if len(list) % 2 == 0: return (list[int(len(list)/2-1)] + list[int(len(list)/2)]) / 2
         else:                  return list[int((len(list)-1)/2)]
 
     def std(self,list):
@@ -54,7 +54,7 @@ class Mining():
         listA = self.raw_list(listA)
         listB = self.raw_list(listB)
 
-        if type == 'Delta':   list = [A-B for A,B in zip(listA,listB)]
+        if   type == 'Delta': list = [A-B for A,B in zip(listA,listB)]
         elif type == 'Ratio': list = [(A-B)/((A+B)/2) for A,B in zip(listA,listB)]
 
         return ['%s' % self.median(listA + listB), '%s' % self.std(list)]
@@ -65,10 +65,10 @@ class Mining():
         for Etest in self.cfg.Etest:
             f = open(Etest + meas); Result = f.read()
 
-            if self.cfg.Type in ['typ','sens','noise_mc'] and self.cfg.dutype == 1:
+            if self.cfg.Type in ['typ','dcmatch','noise_mc'] and self.cfg.dutype == 1:
                 dic[Etest] = hunter_meas(Etest,Result)
 
-            elif self.cfg.Type in ['typ','sens'] and self.cfg.dutype == 2:
+            elif self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 2:
                 for i,size in enumerate(self.cfg.Sizes):
                     dic[Etest+str(i+1)] = hunter_meas(Etest+str(i+1),Result)
 
@@ -90,7 +90,7 @@ class Mining():
 
     def record_data(self,dic,csv,portion,np=''):
 
-        if self.cfg.Type in ['typ','sens'] and self.cfg.dutype == 1:
+        if self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 1:
             start = portion*len(self.cfg.Sizes)
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:]
@@ -99,7 +99,7 @@ class Mining():
                     except IndexError:  list += [' ']
                 self.wr(csv,','.join(list))
 
-        elif self.cfg.Type in ['typ','sens'] and self.cfg.dutype == 2:
+        elif self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 2:
             start = portion
             for n,size in enumerate(self.cfg.Sizes):
                 list = [size]
@@ -182,7 +182,7 @@ class Mining():
         self.wr(csv,'Temp: ' + temp)
         self.wr(csv,'Vdd: ' + vdd)
 
-        if self.cfg.dutype == 1:   self.wr(csv,','.join([x for x in self.cfg.Instance + self.Etest_Unit]))
+        if   self.cfg.dutype == 1: self.wr(csv,','.join([x for x in self.cfg.Instance + self.Etest_Unit]))
         elif self.cfg.dutype == 2: self.wr(csv,','.join(['Dut'] + self.Etest_Unit))
 
         return csv
@@ -213,7 +213,6 @@ class Mining():
                 self.record_block(dic,csv_file,device,np)
                 open_csv(csv_file)
 
-
     def del_temp(self):
         postfix_list = [
         '.ac',
@@ -234,6 +233,3 @@ class Mining():
                 if m.group(1) in postfix_list:
                     try:    os.remove(self.cfg.Folder + '/' + fname)
                     except: pass
-
-    if __name__ == '__main__':
-        pass

@@ -1,6 +1,6 @@
 import re,os
 
-class Net():
+class Net:
     
     def __init__(self,cfg):
         self.cfg = cfg
@@ -27,8 +27,8 @@ class Net():
         # <W>/<L> -> 0.096u/0.008u
         all = re.findall(r'<(.+?)>',Text)
         for x in all:
-            try:    Text = re.sub(r'<%s>'%x, self.cfg.Dut_Dic[i][x.lower()], Text)
-            except: Text = re.sub(r'<%s>'%x, x, Text)
+            try:    Text = re.sub(r'<%s>' % x, self.cfg.Dut_Dic[i][x.lower()], Text)
+            except: Text = re.sub(r'<%s>' % x, x, Text)
         return Text
 
     def set_MODEL(self,Etest):
@@ -43,10 +43,11 @@ class Net():
 
     def set_DEVICE(self,Etest):
         try:
-            if   self.cfg.Type == 'mis':     Text = open('mis/'+Etest).read()
+            if   self.cfg.Type == 'mis':      Text = open('mis/'+Etest).read()
             #elif self.cfg.Type == 'sens':    Text = open('sens/'+Etest).read()
-            elif self.cfg.Type == 'mos_mc':  Text = open('mos_mc/'+Etest).read()
-            elif self.cfg.Type == 'dcmatch': Text = open('dcmatch/'+Etest).read()
+            elif self.cfg.Type == 'mos_mc':   Text = open('mos_mc/'+Etest).read()
+            elif self.cfg.Type == 'dcmatch':  Text = open('dcmatch/'+Etest).read()
+            elif self.cfg.Type == 'noise_mc': Text = open('noise_mc/'+Etest).read()
             else: Text = open(Etest).read()
         except:
             print(' **Error**: Etest not found in bin/%s: %s' % (self.cfg.Type, Etest)); exit()

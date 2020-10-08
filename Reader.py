@@ -39,7 +39,7 @@ class Config:
         # get instance from the first line, remain is dut sizes
         self.Instance_raw, self.Sizes = self.Dut[0], self.Dut[1:]
 
-        self.Instance, self.size_unit = [], []
+        self.size_unit, self.Instance = [], []
         for x in self.Instance_raw:
             try:
                 self.size_unit.append(re.search(r'\((.*)\)',x).group(1))
