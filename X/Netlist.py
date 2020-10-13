@@ -43,14 +43,13 @@ class Net:
 
     def set_DEVICE(self,Etest):
         try:
-            if   self.cfg.Type == 'mis':      Text = open('mis/'+Etest).read()
-            #elif self.cfg.Type == 'sens':    Text = open('sens/'+Etest).read()
-            elif self.cfg.Type == 'mos_mc':   Text = open('mos_mc/'+Etest).read()
-            elif self.cfg.Type == 'dcmatch':  Text = open('dcmatch/'+Etest).read()
-            elif self.cfg.Type == 'noise_mc': Text = open('noise_mc/'+Etest).read()
+            if   self.cfg.Mode == 'mis':      Text = open('mis/'+Etest).read()
+            elif self.cfg.Mode == 'mos_mc':   Text = open('mos_mc/'+Etest).read()
+            elif self.cfg.Mode == 'dcmatch':  Text = open('dcmatch/'+Etest).read()
+            elif self.cfg.Mode == 'noise_mc': Text = open('noise_mc/'+Etest).read()
             else: Text = open(Etest).read()
         except:
-            print(' **Error**: Etest not found in bin/%s: %s' % (self.cfg.Type, Etest)); exit()
+            print(' **Error**: Etest not found in bin/%s: %s' % (self.cfg.Mode, Etest)); exit()
 
         # replace .param
         params = re.findall('\.param\s*(\w+)\s*\n', Text, re.I)
@@ -67,11 +66,11 @@ class Net:
                 self.Instance_Discard += [i]
 
         # sweep type
-        if self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 1:
+        if self.cfg.Mode in ['typ','dcmatch'] and self.cfg.dutype == 1:
             swp_type = 'sweep data=sweep_instance'
-        elif self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 2:
+        elif self.cfg.Mode in ['typ','dcmatch'] and self.cfg.dutype == 2:
             swp_type = ''
-        elif self.cfg.Type in ['noise_mc','mis','monte','mos_mc']:
+        elif self.cfg.Mode in ['noise_mc','mis','monte','mos_mc']:
             swp_type = 'sweep monte=%s' % self.cfg.MC_num
         try:
             Text = re.sub(r'(\.(dc\s|ac\s).*)\s*\n',r'\1 '+swp_type+'\n\n', Text, flags=re.I)
@@ -79,14 +78,14 @@ class Net:
             pass
 
         # model name
-        if self.cfg.Type == 'mos_mc':
+        if self.cfg.Mode == 'mos_mc':
             Text = re.sub('model_name_n', self.cfg.Device[0], Text)
             Text = re.sub('model_name_p', self.cfg.Device[1], Text)
         else:
             Text = re.sub('model_name', self.cfg.Device, Text)
 
         # device
-        if self.cfg.Type in ['typ','noise_mc','dcmatch'] and self.cfg.dutype == 1:
+        if self.cfg.Mode in ['typ','noise_mc','dcmatch'] and self.cfg.dutype == 1:
             Text = re.sub('dev_param', ' '.join(['{}={}'.format(i,i) for i in self.Instance_Discard]), Text)
             Text = re.sub('~','',Text)
             Text = self.drop_brackt(Text)
@@ -101,27 +100,27 @@ class Net:
 
     def device_iteration(self,Text,Dut_block=''):
 
-        if self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 1:
+        if self.cfg.Mode in ['typ','dcmatch'] and self.cfg.dutype == 1:
             Text += '\n.data sweep_instance\n'
             Text += '+%s\n' % '\t'.join(self.cfg.Instance)
             for i,size in enumerate(self.cfg.Sizes):
                 Text += '+%s\t$%s\n' % ('\t'.join(j+o for j,o in zip(size,self.cfg.size_unit)), i+1)
             Text += '.enddata\n'
 
-        elif self.cfg.Type == 'typ' and self.cfg.dutype == 2:
+        elif self.cfg.Mode == 'typ' and self.cfg.dutype == 2:
             for i,size in enumerate(self.cfg.Sizes):
                 Dut_new = re.sub(r'~', str(i+1), Dut_block)
                 Dut_new = self.instanceV(Dut_new, size)
                 Dut_new = self.measureV(Dut_new, i+1)
                 Text += '\n' + Dut_new + '\n'
 
-        elif self.cfg.Type == 'noise_mc' and self.cfg.dutype == 1:
+        elif self.cfg.Mode == 'noise_mc' and self.cfg.dutype == 1:
             for i,size in enumerate(self.cfg.Sizes):
                 if i > 0:
                     Text += '\n.alter'
                 Text += '\n.param ' + ' '.join(['%s=%s%s' % (m,n,o) for m,n,o in zip(self.cfg.Instance, size, self.cfg.size_unit)])
 
-        elif self.cfg.Type in ['monte','mis','mos_mc']:
+        elif self.cfg.Mode in ['monte','mis','mos_mc']:
             for i,size in enumerate(self.cfg.Sizes):
                 Dut_new = re.sub(r'~', str(i+1), Dut_block)
                 Dut_new = self.instanceV(Dut_new, size)
@@ -129,9 +128,9 @@ class Net:
                 Text += '\n' + Dut_new + '\n'
 
         else:
-            # Type = dcmatch & dutype == 2      .acmatch i(vg) set to only 1 command.
-            # Type = noise_mc & dutype == 2     .noise only analysis one port.
-            print(' **Error** dut format does not support Analysis Type: ' + self.cfg.Type); exit()
+            # Mode = dcmatch & dutype == 2      .acmatch i(vg) set to only 1 command.
+            # Mode = noise_mc & dutype == 2     .noise only analysis one port.
+            print(' **Error** dut format does not support Analysis Mode: ' + self.cfg.Mode); exit()
 
         return Text + '\n'
 

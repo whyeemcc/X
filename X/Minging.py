@@ -19,7 +19,8 @@ class Mining:
     def Etest_Unit(self):
         temp = []
         for Etest in self.cfg.Etest:
-            if self.cfg.Type in ['typ','dcmatch']: temp += [self.unit(Etest)]
+            if self.cfg.Mode in ['typ','dcmatch']: temp += [self.unit(Etest)]
+            elif self.cfg.Mode in ['var']:         temp += [self.unit(Etest) + '_mis_total', self.unit(Etest)]
             else:                                  temp += [self.unit(Etest) + '_median', self.unit(Etest) + '_sigma']
         return temp
 
@@ -59,29 +60,49 @@ class Mining:
 
         return ['%s' % self.median(listA + listB), '%s' % self.std(list)]
 
+    def std_mis_sum(self, list):
+        return sum([x**2 for x in list])**0.5
+        
+    def var_statistics(self, data):
+        import json
+        dic_var = {}
+        for Etest in self.cfg.Etest:
+            for i,size in enumerate(self.cfg.Sizes):
+                data_list = [eval(x) for x in data[Etest + str(i+1)]]
+                dic_var[Etest + str(i+1)] = {'TT':data_list[0]}
+                for j,rnd in enumerate(self.cfg.list('rnd_var_all')):
+                    dic_var[Etest + str(i+1)][rnd] = self.std([data_list[0], data_list[2*j+1], data_list[2*j+2]])*(2**0.5)
+                    
+        js = json.dumps(dic_var, sort_keys=False, indent=4, separators=(',', ':'))
+        with open('...','w') as js_file:
+            js_file.write(js)
+        js_file.close()
+        
+        return dic_var
+     
     def extract_data(self):
         dic = {}
 
         for Etest in self.cfg.Etest:
             f = open(Etest + meas); Result = f.read()
 
-            if self.cfg.Type in ['typ','dcmatch','noise_mc'] and self.cfg.dutype == 1:
+            if self.cfg.Mode in ['typ','dcmatch','noise_mc'] and self.cfg.dutype == 1:
                 dic[Etest] = hunter_meas(Etest,Result)
 
-            elif self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 2:
+            elif self.cfg.Mode in ['typ','dcmatch'] and self.cfg.dutype == 2:
                 for i,size in enumerate(self.cfg.Sizes):
                     dic[Etest+str(i+1)] = hunter_meas(Etest+str(i+1),Result)
 
-            elif self.cfg.Type == 'monte':
+            elif self.cfg.Mode in ['monte','var']:
                 for i,size in enumerate(self.cfg.Sizes):
                     dic[Etest+str(i+1)] = hunter_meas(Etest+str(i+1),Result)
 
-            elif self.cfg.Type == 'mis':
+            elif self.cfg.Mode == 'mis':
                 for i,size in enumerate(self.cfg.Sizes):
                     dic[Etest+str(i+1)+'_a'] = hunter_meas(Etest+str(i+1)+'_a',Result)
                     dic[Etest+str(i+1)+'_b'] = hunter_meas(Etest+str(i+1)+'_b',Result)
 
-            elif self.cfg.Type == 'mos_mc':
+            elif self.cfg.Mode == 'mos_mc':
                 for i,size in enumerate(self.cfg.Sizes):
                     dic[Etest+str(i+1)+'_n'] = hunter_meas(Etest+str(i+1)+'_n',Result)
                     dic[Etest+str(i+1)+'_p'] = hunter_meas(Etest+str(i+1)+'_p',Result)
@@ -90,7 +111,7 @@ class Mining:
 
     def record_data(self,dic,csv,portion,np=''):
 
-        if self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 1:
+        if self.cfg.Mode in ['typ','dcmatch'] and self.cfg.dutype == 1:
             start = portion*len(self.cfg.Sizes)
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:]
@@ -99,7 +120,7 @@ class Mining:
                     except IndexError:  list += [' ']
                 self.wr(csv,','.join(list))
 
-        elif self.cfg.Type in ['typ','dcmatch'] and self.cfg.dutype == 2:
+        elif self.cfg.Mode in ['typ','dcmatch'] and self.cfg.dutype == 2:
             start = portion
             for n,size in enumerate(self.cfg.Sizes):
                 list = [size]
@@ -108,7 +129,7 @@ class Mining:
                     except IndexError:  list += [' ']
                 self.wr(csv,','.join(list))
 
-        elif self.cfg.Type == 'mis':
+        elif self.cfg.Mode == 'mis':
             start = portion*self.cfg.MC_num
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:] if self.cfg.dutype == 1 else [size]
@@ -121,7 +142,14 @@ class Mining:
                         list += ['','']
                 self.wr(csv,','.join(list))
 
-        elif self.cfg.Type == 'monte':   
+        elif self.cfg.Mode == 'var':
+            dic_var = self.var_statistics(dic)
+            for n,size in enumerate(self.cfg.Sizes):
+                list = size[:] if self.cfg.dutype == 1 else [size]
+                
+                
+                
+        elif self.cfg.Mode == 'monte':   
             start = portion*self.cfg.MC_num
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:] if self.cfg.dutype == 1 else [size]
@@ -130,14 +158,14 @@ class Mining:
                 self.wr(csv,','.join(list))
 
                 for m in range(self.cfg.MC_num):
-                    list2 = ['' for x in size]; list2[-1] = str(m+1)
+                    list2 = ['']*(len(size)-1) + [str(m+1)]
                     for Etest in self.cfg.Etest:
                         try:                list2 += [dic[Etest + str(n+1)][start + m],'']
                         except IndexError:  list2 += ['','']
                     list2.pop()
                     self.wr(csv,','.join(list2))
 
-        elif self.cfg.Type == 'mos_mc':   
+        elif self.cfg.Mode == 'mos_mc':   
             start = portion*self.cfg.MC_num
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:] if self.cfg.dutype == 1 else [size]
@@ -146,14 +174,14 @@ class Mining:
                 self.wr(csv,','.join(list))
 
                 for m in range(self.cfg.MC_num):
-                    list2 = ['' for x in size]; list2[-1] = str(m+1)
+                    list2 = ['']*(len(size)-1) + [str(m+1)]
                     for Etest in self.cfg.Etest:
                         try:                list2 += [dic[Etest + str(n+1) + '_' + np][start + m],'']
                         except IndexError:  list2 += ['','']
                     list2.pop()
                     self.wr(csv,','.join(list2))
 
-        elif self.cfg.Type == 'noise_mc':
+        elif self.cfg.Mode == 'noise_mc':
             start = portion*len(self.cfg.Sizes)*self.cfg.MC_num
             for n,size in enumerate(self.cfg.Sizes):
                 lump = n*self.cfg.MC_num
@@ -163,7 +191,7 @@ class Mining:
                 self.wr(csv,','.join(list))
 
                 for m in range(self.cfg.MC_num):
-                    list2 = ['' for x in size]; list2[-1] = str(m+1)
+                    list2 = ['']*(len(size)-1) + [str(m+1)]
                     for Etest in self.cfg.Etest:
                         try:                list2 += [dic[Etest][start + lump + m],'']
                         except IndexError:  list2 += ['','']
@@ -175,6 +203,7 @@ class Mining:
         self.wr(csv,'Cfg: ' + cfg_File)
         self.wr(csv,'Simulator: ' + system + ' + ' + engine)
         self.wr(csv,'Device: ' + device)
+        self.wr(csv,'Mode: ' + self.cfg.Mode)
 
     def condition(self,csv,cor,temp,vdd):
         self.wr(csv,'')
@@ -203,11 +232,11 @@ class Mining:
         time_now = time.strftime("%Y-%m-%d-%H-%M-%S",time.localtime())
         os.chdir('../')
 
-        if self.cfg.Type != 'mos_mc':
+        if self.cfg.Mode != 'mos_mc':
             csv_file = r'X_output_{}_{}_{}.csv'.format(abbr,cfg_File,time_now)
             self.record_block(dic,csv_file,self.cfg.Device,'')
             open_csv(csv_file)
-        elif self.cfg.Type == 'mos_mc':
+        elif self.cfg.Mode == 'mos_mc':
             for np,device in zip(['n','p'], self.cfg.Device):
                 csv_file = r'X_output_{}_mc_{}_{}_{}.csv'.format(abbr,np,cfg_File,time_now)
                 self.record_block(dic,csv_file,device,np)

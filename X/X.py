@@ -11,6 +11,8 @@ if path_cfg == '': path_cfg = path_Xmodel
 
 os.chdir(path_cfg); cfg = Config(cfg_File)
 
+path_Device = path_cfg + '/output/' + cfg.Folder
+
 def generate_netlist():
     net = Net(cfg)
     os.chdir(path_Xmodel + '/bin')
@@ -23,7 +25,7 @@ def run_netlist():
     printColor('--- load cfg: ' + cfg_File + ' ---',YELLOW)
     printColor('<' + cfg.Folder + '>',PINK)
     
-    os.chdir(path_cfg + '/output/' + cfg.Folder)
+    os.chdir(path_Device)
     time1 = time.time()
     for Etest in cfg.Etest:
         engine_run(Etest)
@@ -33,7 +35,7 @@ def run_netlist():
     printColor('----------- time: {:.2f}s'.format(time2-time1),GREEN)
 
 def extract_data():
-    os.chdir(path_cfg + '/output/' + cfg.Folder)
+    os.chdir(path_Device)
     mining = Mining(cfg)
     try:
         mining.save()

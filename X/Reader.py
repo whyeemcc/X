@@ -16,21 +16,10 @@ class Config:
         self.Vdd           = self.list('Vdd')
         self.Temp          = self.list('temperature')
         self.Etest         = self.list('Etest')
-        self.Type          = self.str('mis/monte/typ').lower()
+        self.Mode          = self.str('mis/monte/typ').lower()
         self.MC_num        = eval(self.str('mc_number'))
         self.Dut           = self.block('dut_width/length/instance_params')
 
-        if self.Type not in ['typ','mis','monte','mos_mc','noise_mc','dcmatch']:
-            input(' **Error** Analysis not support type: ' + self.Type); exit()
-
-        if self.Type == 'mos_mc':
-            if len(self.Device) < 2: input(' **Error** Must fill in two Devices.'); exit()
-            self.Folder = '_'.join(['mc'] + self.Device)
-        else:
-            self.Device = self.Device[0]
-            self.Folder = self.Device
-            self.devtp = 1 if self.Device[0].lower() == 'n' else -1
-            
         self.model_path = os.path.join(self.Lib_path, self.Model_name)
         # if model file is .lib, then neglect the corner list
         self.lib_flag = True if os.path.splitext(self.Model_name)[1] == '.lib' else False
@@ -53,6 +42,21 @@ class Config:
             if   self.dutype == 1: self.Dut_Dic[i+1] = {x.lower():y+o for x,y,o in zip(self.Instance, size, self.size_unit)}
             elif self.dutype == 2: self.Dut_Dic[i+1] = {x.lower():y for (x,y) in re.findall('(\S+)\s*=\s*(\S+)',size)}
 
+        self.check()    
+            
+    def check(self):
+        if self.Mode not in ['typ','mis','monte','var','mos_mc','noise_mc','dcmatch']:
+            input(' **Error** Analysis not support Mode: ' + self.Mode); exit()
+
+        if self.Mode == 'mos_mc':
+            if len(self.Device) < 2: input(' **Error** Must fill in two Devices.'); exit()
+            self.Folder = '_'.join(['mc'] + self.Device)
+        else:
+            self.Device = self.Device[0]
+            self.Folder = self.Device
+            self.devtp = 1 if self.Device[0].lower() == 'n' else -1
+            
+            
     def drop(self, key, line):
         try:    return re.search(key + '\s*\|\s*(.+?)\s*\n', line, re.I).group(1)
         except: input(' **Error** Config reading failed: ' + key); exit()
