@@ -25,8 +25,8 @@ class Window(QWidget):
         self.table.setFixedWidth(500)
         #self.table.setSelectionBehavior(QAbstractItemView.SelectRows) #设置表格的选取方式是行选取
         #self.table.setSelectionMode(QAbstractItemView.SingleSelection) #设置选取方式为单个选取
-        self.table.setHorizontalHeaderLabels(Header) #设置行表头
-        self.table.verticalHeader().setVisible(False)#隐藏列表头
+        self.table.setHorizontalHeaderLabels(Header)  #设置行表头
+        self.table.verticalHeader().setVisible(False) #隐藏列表头
  
         self.table_insert()
  
@@ -54,23 +54,22 @@ class Window(QWidget):
         self.save_button.clicked.connect(self.save)
         self.save_button.setText("Save")
 
-    #insert,只是简单插入一个固定数据
+        
     def table_insert(self):
         row = self.table.rowCount()
         self.table.insertRow(row)
  
         item_id = QTableWidgetItem("1")
-        item_id.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # 设置物件的状态为只可被选择（未设置可编辑）
+        item_id.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled) 
  
-        item_name = QTableWidgetItem("door") #我们要求它可以修改，所以使用默认的状态即可
+        item_name = QTableWidgetItem("door") 
  
         item_pos = QTableWidgetItem("(1,2)")
-        item_pos.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # 设置物件的状态为只可被选择
+        item_pos.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # select only
 
         self.table.setItem(row, 0, item_id)
         self.table.setItem(row, 1, item_name)
         self.table.setItem(row, 2, item_pos)
-        #以下可以加入保存数据到数据的操作
  
  
 if __name__ == "__main__":
