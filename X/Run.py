@@ -39,5 +39,5 @@ while True:
     
 for cfg in cfg_select:
     os.chdir(path + '/X')
-    os.system('python X.py {} "{}"'.format(abbr,cfg))
+    os.system('python X.py {} "{}"'.format(abbr,path + '/' + cfg))
     

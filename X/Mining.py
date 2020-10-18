@@ -6,6 +6,7 @@ class Mining:
 
     def __init__(self,cfg):
         self.cfg = cfg
+        os.chdir(cfg.path_Folder)
         self.Etest_Unit = self.Etest_Unit()
 
     def wr(self,f,x):
@@ -20,7 +21,7 @@ class Mining:
         temp = []
         for Etest in self.cfg.Etest:
             if self.cfg.Mode in ['typ','dcmatch']: temp += [self.unit(Etest)]
-            elif self.cfg.Mode in ['var']:         temp += [self.unit(Etest) + '_mis_total', self.unit(Etest)]
+            elif self.cfg.Mode in ['diff']:        temp += [self.unit(Etest) + '_mis_total', self.unit(Etest)]
             else:                                  temp += [self.unit(Etest) + '_median', self.unit(Etest) + '_sigma']
         return temp
 
@@ -47,7 +48,7 @@ class Mining:
 
     def median_std_mis(self,Etest,listA,listB):
         import json
-        with open('../bin/mis/misType.jsonx','r') as f:
+        with open(self.cfg.path_Bin + '/mis/misType.jsonx','r') as f:
             misType = json.load(f)
 
         type = misType[Etest]
@@ -63,22 +64,22 @@ class Mining:
     def std_mis_sum(self, list):
         return sum([x**2 for x in list])**0.5
         
-    def var_statistics(self, data):
+    def diff_statistics(self, data):
         import json
-        dic_var = {}
+        dic_diff = {}
         for Etest in self.cfg.Etest:
             for i,size in enumerate(self.cfg.Sizes):
                 data_list = [eval(x) for x in data[Etest + str(i+1)]]
-                dic_var[Etest + str(i+1)] = {'TT':data_list[0]}
+                dic_diff[Etest + str(i+1)] = {'TT':data_list[0]}
                 for j,rnd in enumerate(self.cfg.list('rnd_var_all')):
-                    dic_var[Etest + str(i+1)][rnd] = self.std([data_list[0], data_list[2*j+1], data_list[2*j+2]])*(2**0.5)
+                    dic_diff[Etest + str(i+1)][rnd] = self.std([data_list[0], data_list[2*j+1], data_list[2*j+2]])*(2**0.5)
                     
-        js = json.dumps(dic_var, sort_keys=False, indent=4, separators=(',', ':'))
-        with open('...','w') as js_file:
+        js = json.dumps(dic_diff, sort_keys=False, indent=4, separators=(',', ':'))
+        with open(self.cfg.path_Folder + '/diff_statis.jsonx','w') as js_file:
             js_file.write(js)
         js_file.close()
         
-        return dic_var
+        return dic_diff
      
     def extract_data(self):
         dic = {}
@@ -93,7 +94,7 @@ class Mining:
                 for i,size in enumerate(self.cfg.Sizes):
                     dic[Etest+str(i+1)] = hunter_meas(Etest+str(i+1),Result)
 
-            elif self.cfg.Mode in ['monte','var']:
+            elif self.cfg.Mode in ['monte','diff']:
                 for i,size in enumerate(self.cfg.Sizes):
                     dic[Etest+str(i+1)] = hunter_meas(Etest+str(i+1),Result)
 
@@ -142,12 +143,21 @@ class Mining:
                         list += ['','']
                 self.wr(csv,','.join(list))
 
-        elif self.cfg.Mode == 'var':
-            dic_var = self.var_statistics(dic)
+        elif self.cfg.Mode == 'diff':
+            dic_diff = self.diff_statistics(dic)
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:] if self.cfg.dutype == 1 else [size]
+                for Etest in self.cfg.Etest:
+                    list += [self.std_mis_sum([dic_diff[Etest + str(i+1)][rnd] for rnd in self.cfg.list('rnd_var_all')]), dic_diff[Etest + str(i+1)]['TT']]
+                self.wr(csv, ','.join([str(x) for x in list]))
                 
-                
+                for rnd in self.cfg.list('rnd_var_all'):
+                    list2 = ['']*(len(size)-1) + [rnd]
+                    for Etest in self.cfg.Etest:
+                        try:                list2 += [str(dic_diff[Etest + str(n+1)][rnd]),'']
+                        except IndexError:  list2 += ['','']
+                    list2.pop()
+                    self.wr(csv,','.join(list2))              
                 
         elif self.cfg.Mode == 'monte':   
             start = portion*self.cfg.MC_num
@@ -200,7 +210,7 @@ class Mining:
 
     def head(self,csv,device):
         self.wr(csv,'Model: ' + self.cfg.model_path)
-        self.wr(csv,'Cfg: ' + cfg_File)
+        self.wr(csv,'Cfg: ' + self.cfg.cfg_Name)
         self.wr(csv,'Simulator: ' + system + ' + ' + engine)
         self.wr(csv,'Device: ' + device)
         self.wr(csv,'Mode: ' + self.cfg.Mode)
@@ -233,12 +243,12 @@ class Mining:
         os.chdir('../')
 
         if self.cfg.Mode != 'mos_mc':
-            csv_file = r'X_output_{}_{}_{}.csv'.format(abbr,cfg_File,time_now)
+            csv_file = r'X_output_{}_{}_{}.csv'.format(abbr,self.cfg.cfg_Name,time_now)
             self.record_block(dic,csv_file,self.cfg.Device,'')
             open_csv(csv_file)
         elif self.cfg.Mode == 'mos_mc':
             for np,device in zip(['n','p'], self.cfg.Device):
-                csv_file = r'X_output_{}_mc_{}_{}_{}.csv'.format(abbr,np,cfg_File,time_now)
+                csv_file = r'X_output_{}_mc_{}_{}_{}.csv'.format(abbr,np,self.cfg.cfg_Name,time_now)
                 self.record_block(dic,csv_file,device,np)
                 open_csv(csv_file)
 

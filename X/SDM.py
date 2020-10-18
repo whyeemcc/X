@@ -23,8 +23,6 @@ class Window(QWidget):
         self.table.setColumnCount(3)
         self.table.setFixedHeight(300)
         self.table.setFixedWidth(500)
-        #self.table.setSelectionBehavior(QAbstractItemView.SelectRows) #设置表格的选取方式是行选取
-        #self.table.setSelectionMode(QAbstractItemView.SingleSelection) #设置选取方式为单个选取
         self.table.setHorizontalHeaderLabels(Header)  #设置行表头
         self.table.verticalHeader().setVisible(False) #隐藏列表头
  

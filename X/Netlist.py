@@ -4,6 +4,7 @@ class Net:
     
     def __init__(self,cfg):
         self.cfg = cfg
+        os.chdir(self.cfg.path_Bin)
     
     def lib_attach_add(self,type,corner):
         Text = "{} '{}' {}\n".format(type, self.cfg.model_path, corner)
@@ -72,6 +73,8 @@ class Net:
             swp_type = ''
         elif self.cfg.Mode in ['noise_mc','mis','monte','mos_mc']:
             swp_type = 'sweep monte=%s' % self.cfg.MC_num
+        elif self.cfg.Mode in ['diff']:
+            swp_type = 'sweep data=sweep_rand'
         try:
             Text = re.sub(r'(\.(dc\s|ac\s).*)\s*\n',r'\1 '+swp_type+'\n\n', Text, flags=re.I)
         except:
@@ -126,7 +129,26 @@ class Net:
                 Dut_new = self.instanceV(Dut_new, size)
                 Dut_new = self.measureV(Dut_new, i+1)
                 Text += '\n' + Dut_new + '\n'
-
+                
+        elif self.cfg.Mode in ['diff']:
+            for i,size in enumerate(self.cfg.Sizes):
+                Dut_new = re.sub(r'~', str(i+1), Dut_block)
+                Dut_new = self.instanceV(Dut_new, size)
+                Dut_new = self.measureV(Dut_new, i+1)
+                Text += '\n' + Dut_new + '\n'
+                
+            rnd_count = len(self.cfg.list('rnd_var_all'))
+            Text += '\n.data sweep_rand\n'
+            Text += '+%s\n' % '\t'.join(self.cfg.list('rnd_var_all'))
+            
+            for i in range(1 + 2*rnd_count):
+                if i == 0:
+                    Text += '+' + '\t\t\t'.join(['0']*rnd_count + ['$%s\n'%(i+1)])
+                else:
+                    if   i % 2 != 0: Text += '+' + '\t\t\t'.join(['1'  if j+1 == (i+1)/2 else '0' for j in range(rnd_count)] + ['$%s\n'%(i+1)])
+                    elif i % 2 == 0: Text += '+' + '\t\t\t'.join(['-1' if j+1 == i/2     else '0' for j in range(rnd_count)] + ['$%s\n'%(i+1)])
+            Text += '.enddata\n'
+            
         else:
             # Mode = dcmatch & dutype == 2      .acmatch i(vg) set to only 1 command.
             # Mode = noise_mc & dutype == 2     .noise only analysis one port.
@@ -153,14 +175,11 @@ class Net:
     def combine(self,Etest):
         return self.set_MODEL(Etest) + self.set_DEVICE(Etest) + self.alter_condition() + '.end\n'
 
-    def save(self,path_cfg,Etest):
+    def save(self,Etest):
         Text = self.combine(Etest)
 
-        os.chdir(path_cfg)
-        if not os.path.exists('output'): os.mkdir('output')
-        os.chdir('output')        
-        if not os.path.exists(self.cfg.Folder): os.mkdir(self.cfg.Folder)
+        if not os.path.exists(self.cfg.path_Output): os.mkdir(self.cfg.path_Output)      
+        if not os.path.exists(self.cfg.path_Folder): os.mkdir(self.cfg.path_Folder)
 
-        os.chdir(self.cfg.Folder)
-        with open(Etest + '.sp','w') as sp:
+        with open(self.cfg.path_Folder + '/' + Etest + '.sp','w') as sp:
             sp.write(Text)

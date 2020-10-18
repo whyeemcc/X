@@ -1,0 +1,22 @@
+.param devtp
+.param vdd
+.param vg_start
+.param sweep_step
+.param scale_normalize
+.param normalize_size
+.param idc
+.param dl
+
+.param vdd1='vdd*devtp'
+
+VGS G 0 0
+
+.dc VGS vg_start vdd1 'sweep_step*devtp'
+
+xM~_a D~_a G 0 0 model_name dev_param
+VDS~_a D~_a 0 vdd1
+.meas dc vt_sat~_a find v(G,0) when i(VDS~_a)='-1*idc*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)'            $unit(V)
+	
+xM~_b D~_b G 0 0 model_name dev_param
+VDS~_b D~_b 0 vdd1
+.meas dc vt_sat~_b find v(G,0) when i(VDS~_b)='-1*idc*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)'            $unit(V)
