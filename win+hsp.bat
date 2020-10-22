@@ -1,3 +1,3 @@
 @echo off
-title %cd%
-python X/Run.py
+title MLAB
+python X/Run.py hsp

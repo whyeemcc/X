@@ -11,7 +11,7 @@
 
 VGS G 0 0
 
-.dc VGS '-vdd' 'vdd' 'sweep_step'
+.dc VGS '-vdd' vdd 'sweep_step'
 
 xM~_n D~_n G 0 0 model_name_n dev_param
 VDS~_n D~_n 0 'vdd*devtp_n'
