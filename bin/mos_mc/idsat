@@ -1,7 +1,6 @@
 .param devtp
 .param vdd
 .param scale_normalize
-.param normalize_size
 
 .param vgsweep=0
 
