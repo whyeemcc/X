@@ -3,7 +3,6 @@
 .param vg_start
 .param sweep_step
 .param scale_normalize
-.param normalize_size
 .param idc
 .param dl 
 

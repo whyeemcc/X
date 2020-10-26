@@ -2,7 +2,6 @@
 .param vg_start
 .param sweep_step
 .param scale_normalize
-.param normalize_size
 .param idc
 .param dl
 
@@ -14,9 +13,9 @@ VGS G 0 0
 .dc VGS '-vdd' vdd 'sweep_step'
 
 xM~_n D~_n G 0 0 model_name_n dev_param
-VDS~_n D~_n 0 'vdd*devtp_n'
+VDS~_n D~_n 0 '<vdd>*devtp_n'
 .meas dc vt_sat~_n find v(G,0) when i(VDS~_n)='-1*idc*devtp_n*(<W>*scale_normalize)/(<L>*scale_normalize+dl)'            $unit(V)
 	
 xM~_p D~_p G 0 0 model_name_p dev_param
-VDS~_p D~_p 0 'vdd*devtp_p'
+VDS~_p D~_p 0 '<vdd>*devtp_p'
 .meas dc vt_sat~_p find v(G,0) when i(VDS~_p)='-1*idc*devtp_p*(<W>*scale_normalize)/(<L>*scale_normalize+dl)'            $unit(V)

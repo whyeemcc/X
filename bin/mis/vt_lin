@@ -4,16 +4,14 @@
 .param vg_start
 .param sweep_step
 .param scale_normalize
-.param normalize_size
 .param idc
 .param dl
 
-.param vdd1='vdd*devtp'
 .param vd_lin1='vd_lin*devtp'
 
 VGS G 0 0
 
-.dc VGS vg_start vdd1 'sweep_step*devtp'
+.dc VGS vg_start 'vdd*devtp' 'sweep_step*devtp'
 
 xM~_a D~_a G 0 0 model_name dev_param
 VDS~_a D~_a 0 vd_lin1
