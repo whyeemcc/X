@@ -11,10 +11,10 @@
 .dc vgsweep 0 Vg_drain Vg_drain
 
 xM~ D~ G~ S~ B~ model_name dev_param
-VDS~ D~ 0 Vd_drain
-VGS~ G~ 0 vgsweep
-VSS~ S~ 0 Vs_drain
-VBS~ B~ 0 Vb_drain
+VDS~ D~ 0 <Vd_drain>
+VGS~ G~ 0 <Vg_drain>
+VSS~ S~ 0 <Vs_drain>
+VBS~ B~ 0 <Vb_drain>
 
-.meas dc idrain~ find '-devtp*i(VDS~)/<NFIN>/scale_normalize*1e6' when v(G~,0)=Vg_drain            $unit(uA/fin)
+.meas dc idrain~ param='-devtp*i(VDS~)/<NFIN>/scale_normalize*1e6'            $unit(uA/fin)
 

@@ -11,10 +11,10 @@
 .noise v(D~) Vgs~ 1
 
 xM~ D~ G~ S~ B~ model_name dev_param
-Vgs~ G~ 0 Vg_drain ac=0.05
-Vds~ DD~ 0 Vd_drain
-Vs~ S~ 0 Vs_drain
-Vb~ B~ 0 Vb_drain
+Vgs~ G~ 0 <Vg_drain> ac=0.05
+Vds~ DD~ 0 <Vd_drain>
+Vs~ S~ 0 <Vs_drain>
+Vb~ B~ 0 <Vb_drain>
 rload~ DD~ D~ 1
 
 .meas ac int_noise_sq integ par('onoise(m)*onoise(m)')

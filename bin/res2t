@@ -7,7 +7,7 @@
 .dc vgsweep 0 Vres Vres
 
 xr~ in~ 0 model_name dev_param
-Vin~ in~ 0 vgsweep
+Vin~ in~ 0 <Vres>
 
-.meas dc i_in~ find i(Vin~) when v(in~,0)=Vres
-.meas dc res2t~ param='-Vres/i_in~/((LR)/(WR))'                $unit(ohm/sq)
+.meas dc i_in~ param=i(Vin~)
+.meas dc res2t~ param='-Vres/i_in~/(<LR>/<WR>)'                $unit(ohm/sq)

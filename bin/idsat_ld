@@ -4,14 +4,12 @@
 .param scale_normalize
 .param normalize_size
 
-.param vdd1_drain='vdd_drain*devtp'
-.param vdd1_gate='vdd_gate*devtp'
 .param vgsweep=0
 
-.dc vgsweep 0 vdd1_gate vdd1_gate
+.dc vgsweep 0 vdd_gate vdd_gate
 
 xM~ D~ G~ 0 0 model_name dev_param
-VDS~ D~ 0 vdd1_drain
-VGS~ G~ 0 vgsweep
+VDS~ D~ 0 '<vdd_drain>*devtp'
+VGS~ G~ 0 '<vdd_gate>*devtp'
 
-.meas dc idsat_ld~ find '-devtp*i(VDS~)/<NFIN>/scale_normalize*1e6' when v(G~,0)=vdd1_gate          $unit(uA/fin)
+.meas dc idsat_ld~ param='-devtp*i(VDS~)/<NFIN>/scale_normalize*1e6'          $unit(uA/fin)

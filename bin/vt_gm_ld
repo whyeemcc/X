@@ -7,20 +7,16 @@
 .param scale_normalize
 .param normalize_size
 
-.param vdd1_drain='vdd_drain*devtp'
-.param vdd1_gate='vdd_gate*devtp'
-.param vd_lin1='vd_lin*devtp'
-
 VGS G 0 0
 
-.dc VGS vg_start vdd1_gate 'sweep_step*devtp'
+.dc VGS vg_start 'vdd_gate*devtp' 'sweep_step*devtp'
 
 xM~ D~ G 0 0 model_name dev_param
-VDS~ D~ 0 vd_lin1
+VDS~ D~ 0 '<vd_lin>*devtp'
 
 .probe gmvalue~=deriv("-i(VDS~)")
 .meas gmmax~ max par(gmvalue~)
 .meas dc vgsmax~ find v(G,0) when par(gmvalue~)=gmmax~                  $ Vgs at Max. GM
 .meas dc idsmax~ find par('-1*i(vds~)') when par(gmvalue~)=gmmax~       $ Ids at Max. GM
-.meas dc vt_gm_ld~ param='vgsmax~-idsmax~/gmmax~-0.5*vd_lin1'           $ Calculated Vt_gm        $unit(V)
+.meas dc vt_gm_ld~ param='vgsmax~-idsmax~/gmmax~-0.5*<vd_lin>*devtp'    $ Calculated Vt_gm        $unit(V)
 

@@ -3,19 +3,18 @@
 .param scale_normalize
 .param normalize_size
 
-.param vdd1='vdd*devtp'
 .param vgsweep=0
 
-.dc vgsweep 0 vdd1 vdd1
+.dc vgsweep 0 vdd vdd
 
 xM1~ D1~ G1~ 0 0 model_name dev_param
-VDS1~ D1~ 0 '0.5*vdd1'
-VGS1~ G1~ 0 vgsweep
+VDS1~ D1~ 0 '0.5*<vdd>*devtp'
+VGS1~ G1~ 0 '<vdd>*devtp'
 
 xM2~ D2~ G2~ 0 0 model_name dev_param
-VDS2~ D2~ 0 vdd1
-VGS2~ G2~ 0 '0.5*vgsweep'
+VDS2~ D2~ 0 '<vdd>*devtp'
+VGS2~ G2~ 0 '0.5*<vdd>*devtp'
 
-.meas dc ida~ find '-devtp*i(VDS1~)/<NFIN>/scale_normalize' when v(G1~,0)=vdd1
-.meas dc idb~ find '-devtp*i(VDS2~)/<NFIN>/scale_normalize' when v(G2~,0)='0.5*vdd1'
+.meas dc ida~ param='-devtp*i(VDS1~)/<NFIN>/scale_normalize'
+.meas dc idb~ param='-devtp*i(VDS2~)/<NFIN>/scale_normalize'
 .meas dc ideff~ param='(ida~+idb~)*1e6/2'                        $unit(uA/fin)

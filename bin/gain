@@ -6,30 +6,26 @@
 .param scale_normalize
 .param normalize_size
 
-.param vdd1='vdd*devtp'
-.param vd_lin1='vd_lin*devtp'
-.param vgsweep=0
+VGS G 0 0
 
-VGS G 0 vgsweep
-
-.dc VGS vg_start vdd1 'sweep_step*devtp'
+.dc VGS vg_start '<vdd>*devtp' 'sweep_step*devtp'
 
 xM1~ D1~ G 0 0 model_name dev_param
-VDS1~ D1~ 0 vd_lin1
+VDS1~ D1~ 0 '<vd_lin>*devtp'
 
 xM2~ D2~ G 0 0 model_name dev_param
-VDS2~ D2~ 0 '0.5*vdd1'
+VDS2~ D2~ 0 '0.5*<vdd>*devtp'
 
 xM3~ D3~ G 0 0 model_name dev_param
-VDS3~ D3~ 0 '0.5*vdd1-0.05'
+VDS3~ D3~ 0 '0.5*<vdd>*devtp-0.05'
 
 xM4~ D4~ G 0 0 model_name dev_param
-VDS4~ D4~ 0 '0.5*vdd1+0.05'
+VDS4~ D4~ 0 '0.5*<vdd>*devtp+0.05'
 
 .meas dc g_mmax~ max lx7(xM1~.m1)                                       $ Maximum GM
 .meas dc vgsmax~ find v(G,0) when lx7(xM1~.m1)=g_mmax~                  $ Vgs at Max. GM
 .meas dc idsmax~ find par('-1*i(vds1~)') when lx7(xM1~.m1)=g_mmax~      $ Ids at Max. GM
-.meas dc vth_g_m~ param='vgsmax~-idsmax~/g_mmax~-0.5*vd_lin1'           $ Calculated Vth_gm
+.meas dc vth_g_m~ param='vgsmax~-idsmax~/g_mmax~-0.5*<vd_lin>*devtp'    $ Calculated Vth_gm
 
 .meas dc ids1~ find par('-1*i(vds2~)') when v(G,0)='vth_g_m~+0.2*devtp-0.025'
 .meas dc ids2~ find par('-1*i(vds2~)') when v(G,0)='vth_g_m~+0.2*devtp+0.025'

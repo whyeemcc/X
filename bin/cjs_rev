@@ -3,13 +3,11 @@
 .param scale_normalize
 .param normalize_size
 
-.param vdd1='vdd*devtp'
-
 .AC POI 1 100000
 
 xM~ D~ G~ S~ B~ model_name dev_param
 VG~ G~ 0 0
-VS~ S~ 0 'vdd1'
+VS~ S~ 0 '<vdd>*devtp'
 VB~ B~ 0 dc=0 ac=0.1
 VD~ D~ 0 0
 

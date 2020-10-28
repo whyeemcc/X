@@ -8,15 +8,12 @@
 .param idc
 .param dl
 
-.param vdd1='vdd*devtp'
-.param vd_lin1='vd_lin*devtp'
-
 VGS G 0 0
 
-.dc VGS vg_start vdd1 'sweep_step*devtp'
+.dc VGS vg_start 'vdd*devtp' 'sweep_step*devtp'
 
 xM~ D~ G 0 0 model_name dev_param
-VDS~ D~ 0 vd_lin1
+VDS~ D~ 0 '<vd_lin>*devtp'
 
 .meas dc vt_sw_a~ find v(G,0) when i(VDS~)=par('-1*1e-8*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)')
 .meas dc vt_sw_b~ find v(G,0) when i(VDS~)=par('-1*1e-10*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)')

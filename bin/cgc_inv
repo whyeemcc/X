@@ -6,15 +6,13 @@
 .param NF=1
 .param MR=1
 
-.param vdd1='vdd*devtp'
-
 .AC POI 1 100000
 
 xM~ D~ G~ S~ B~ model_name dev_param
 VD~ D~ S~ 0
 VB~ B~ 0 0
 VS~ S~ 0 dc=0 ac=0.1
-VG~ G~ 0 'vdd1'
+VG~ G~ 0 '<vdd>*devtp'
 
 .meas ac IC~ find II(VG~) AT=100000
 .meas ac cgc_inv~ param='IC~/0.1/(2*3.14159265358*100000)*1e15/<NFIN>/<NF>/<MR>/scale_normalize'             $unit(fF/fin)

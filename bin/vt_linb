@@ -9,15 +9,12 @@
 .param dl
 .param vbs
 
-.param vdd1='vdd*devtp'
-.param vd_lin1='vd_lin*devtp'
-
 VGS G 0 0
 
-.dc VGS vg_start vdd1 'sweep_step*devtp'
+.dc VGS vg_start 'vdd*devtp' 'sweep_step*devtp'
 
 xM~ D~ G 0 B~ model_name dev_param
-VDS~ D~ 0 vd_lin1
-VBS~ B~ 0 vbs
+VDS~ D~ 0 '<vd_lin>*devtp'
+VBS~ B~ 0 <vbs>
 
 .meas dc vt_linb~ find v(G,0) when i(VDS~)='-1*idc*devtp*(<W>*scale_normalize)/(<L>*scale_normalize+dl)'          $unit(V)

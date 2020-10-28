@@ -1,10 +1,10 @@
 .param vdd
 .param scale_normalize
 
-.param vgsweep=0
-
 .param devtp_n=1
 .param devtp_p=-1
+
+.param vgsweep=0
 
 .dc vgsweep 0 vdd vdd
 
