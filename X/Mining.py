@@ -64,20 +64,21 @@ class Mining:
     def std_mis_sum(self, list):
         return sum([x**2 for x in list])**0.5
         
-    def diff_statistics(self, data):
+    def diff_statistics(self, dic, start):
         import json
         dic_diff = {}
         for Etest in self.cfg.Etest:
             for i,size in enumerate(self.cfg.Sizes):
-                data_list = [eval(x) for x in data[Etest + str(i+1)]]
+                data_list = [eval(x) for x in dic[Etest + str(i+1)][start : start + len(self.cfg.list('rnd_var_all'))*2+1]]
                 dic_diff[Etest + str(i+1)] = {'TT':data_list[0]}
                 for j,rnd in enumerate(self.cfg.list('rnd_var_all')):
                     dic_diff[Etest + str(i+1)][rnd] = self.std([data_list[0], data_list[2*j+1], data_list[2*j+2]])*(2**0.5)
-                    
-        js = json.dumps(dic_diff, sort_keys=False, indent=4, separators=(',', ':'))
-        with open(self.cfg.path_Folder + '/diff_statis.jsonx','w') as js_file:
-            js_file.write(js)
-        js_file.close()
+        
+        if self.cfg.str('save_diff_json') == 'yes':
+            js = json.dumps(dic_diff, sort_keys=False, indent=4, separators=(',', ':'))
+            with open(self.cfg.path_Folder + '/diff_statis.jsonx','w') as js_file:
+                js_file.write(js)
+            js_file.close()
         
         return dic_diff
      
@@ -144,7 +145,8 @@ class Mining:
                 self.wr(csv,','.join(list))
 
         elif self.cfg.Mode == 'diff':
-            dic_diff = self.diff_statistics(dic)
+            start = portion*(len(self.cfg.list('rnd_var_all'))*2+1)
+            dic_diff = self.diff_statistics(dic, start)
             for n,size in enumerate(self.cfg.Sizes):
                 list = size[:] if self.cfg.dutype == 1 else [size]
                 for Etest in self.cfg.Etest:

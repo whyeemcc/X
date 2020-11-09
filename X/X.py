@@ -14,7 +14,7 @@ def generate_netlist():
         net.save(Etest)        
 
 def run_netlist():
-    printColor('Xmodel Processing...',SKYBLUE)
+    printColor('Xmodel Processing...    v0.90',SKYBLUE)
     printColor('--- load cfg: ' + cfg.cfg_Name + ' ---',YELLOW)
     printColor('<' + cfg.Folder + '>',PINK)
     

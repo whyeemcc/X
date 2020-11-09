@@ -75,17 +75,18 @@ class Config:
             for size in self.Sizes:
                 if len(size) != len_inst: input(' **Error** size in cfg not match instance'); exit()
         # diff only support 1 vdd/temp/cor
-        if len(self.Vdd + self.Temp + self.Corner) > 3:
-            input(' **Error** diff Mode only support single vdd/temp/cor'); exit()
+        if self.Mode == 'diff':
+            if self.str('save_diff_json') == 'yes':
+                if len(self.Vdd + self.Temp + self.Corner) > 3: input(' **Error** save diff_statis.json only support single vdd/temp/cor'); exit()
 
     def drop(self, key, line):
         try:    return re.search(key + '\s*\|\s*(.+?)\s*\n', line, re.I).group(1)
-        except: input(' **Error** Config reading failed: ' + key); exit()
+        except: input(' **Error** Missing config item: ' + key); exit()
 
     def split(self, key, line):
         m = re.search(key + '\s*\|(.*)\n', line, re.I)
         try:    return re.findall('\S+', m.group(1))
-        except: input(' **Error** Config reading failed: ' + key); exit()
+        except: input(' **Error** Missing config item: ' + key); exit()
 
     def matrix(self, text):
         self.dutype = 1
